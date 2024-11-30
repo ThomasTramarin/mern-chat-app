@@ -4,14 +4,20 @@ import http from "http";
 import cors from "cors";
 import { Server } from "socket.io";
 import connectToDb from "./db/db";
-const MONGODB_URL = process.env.MONGODB_URL || "mongodb://localhost:27017/chat-app";
+import User from "./models/user.model";
+import dotenv from "dotenv";
+dotenv.config();
+const MONGODB_URL =
+  process.env.MONGODB_URL || "mongodb://localhost:27017/chat-app";
 
 const app = express();
 
-app.use(cors({
+app.use(
+  cors({
     origin: "http://localhost:5173",
-    methods: ["GET", "POST"]
-}));
+    methods: ["GET", "POST"],
+  })
+);
 app.use(express.json());
 
 connectToDb(MONGODB_URL);
@@ -21,17 +27,16 @@ app.use("/auth", authRouter);
 const server = http.createServer(app);
 
 const io = new Server(server, {
-    cors: {
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST"]
-    }
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  },
 });
 
 io.on("connection", (socket) => {
-    console.log("User connected");
+  console.log("User connected");
 });
 
-
 server.listen(3000, () => {
-    console.log("Server is running on port 3000...");
+  console.log("Server is running on port 3000...");
 });
